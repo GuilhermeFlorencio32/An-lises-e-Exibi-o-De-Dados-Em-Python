@@ -1,2 +1,1 @@
-# An-lises-e-Exibi-o-De-Dados-Em-Python
-Repositório para a exposição de análises e exibição de dados em python
+Este repositório contém scripts, notebooks e recursos para análise e visualização de dados geoespaciais utilizando Python e bibliotecas de código aberto. O objetivo é facilitar a exploração de dados espaciais, geração de mapas interativos e aplicação de técnicas de geoprocessamento em diferentes contextos
