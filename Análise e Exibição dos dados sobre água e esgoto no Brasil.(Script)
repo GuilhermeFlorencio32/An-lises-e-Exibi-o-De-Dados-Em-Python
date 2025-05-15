@@ -1,0 +1,101 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
+import seaborn as sns
+import json
+import requests
+
+from sklearn.linear_model import LinearRegression
+
+df = pd.read_csv('/content/dados_esgoto.csv')
+df_limpo = df[df["populacao_urbana_atendida_agua_ibge"].notna()]
+df
+
+fig = px.scatter(
+    df_limpo,
+    x="populacao_atentida_esgoto", # Changed 'populacao_atendida_esgoto' to 'populacao_atentida_esgoto'
+    y="populacao_urbana",
+    size="populacao_urbana_atendida_agua_ibge",
+    color="sigla_uf",
+    hover_data=["populacao_atendida_agua", "populacao_urbana_atendida_agua", "populacao_urbana_residente_esgoto"],
+    animation_frame="ano",
+    size_max=55,  # você pode ajustar esse valor,
+
+)
+
+fig.update_layout(
+    plot_bgcolor = "Black",
+)
+
+
+
+fig.show()
+
+fig = px.line(
+    df_limpo,
+    x="populacao_atentida_esgoto", # Changed 'populacao_atendida_esgoto' to 'populacao_atentida_esgoto'
+    y="populacao_urbana",
+    color="sigla_uf",
+    animation_frame="ano",
+    title = "Gráfico de progressão: População Urbana X População Com Saneamento Básico"
+
+)
+
+
+fig.update_layout(
+    plot_bgcolor = "Black",
+    font_color = "Black"
+)
+
+
+
+fig.show()
+
+df_limpo = df[["populacao_urbana", "populacao_urbana_atendida_agua"]].dropna()
+
+x_1 = pd.DataFrame(df_limpo["populacao_urbana"])
+y_1 = pd.DataFrame(df_limpo["populacao_urbana_atendida_agua"])
+
+rgr_1 = LinearRegression()
+rgr_1.fit(x_1, y_1)
+
+COLOR_1 = "orange"
+COLOR_2 = "black"
+sns.set_style("whitegrid")
+plt.figure()
+ # Accessing the 'populacao_urbana' column from x_1 to ensure consistent shapes
+plt.title(f'Correlation = {round(x_1["populacao_urbana"].corr(df_limpo["populacao_urbana_atendida_agua"]),3)}', fontsize = 14)
+ # Using x_1 and the corresponding predictions for plotting
+plt.scatter(x_1["populacao_urbana"], df_limpo["populacao_urbana_atendida_agua"], color=COLOR_1,s=200)
+plt.plot(x_1["populacao_urbana"], rgr_1.predict(x_1), color=COLOR_2)
+
+Temos pela regressão que a correlação GERAL dos periodos analisados pela planilha é que a quantidade de pessoas com acesso a água é equivalente a 99,7% da população urbana,
+devido ao preenchimento, interpolação ou outros critérios de limpeza, a porcentagem sobe um pouco, sendo considerado uma média de 98,75 de pessoas com acesso a água em relação a população total.
+
+Faremos um gráfico para representação do crescimento da população com acesso á esgoto. Iremos usar uma aplicação demonstrando a ampliação das redes de esgoto nos estados do Brasil.
+
+
+url = 'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson'
+geojson = requests.get(url).json()
+
+
+print(geojson['features'][0]['properties'])  # Isso ajuda a validar a chave certa
+
+df_limpo = df[['sigla_uf', 'populacao_urbana_atendida_esgoto', 'ano',  
+                 'populacao_urbana', 'populacao_urbana_atendida_agua']].dropna()
+
+# Agora o código adaptado
+fig = px.choropleth(
+    df_limpo,
+    geojson=geojson,
+    locations="sigla_uf",  
+    featureidkey="properties.sigla",
+    color="populacao_urbana_atendida_esgoto",
+    animation_frame="ano",
+    color_continuous_scale="Viridis",
+    scope="south america",
+    range_color=(0, 800_000)
+)
+fig.show()
+
