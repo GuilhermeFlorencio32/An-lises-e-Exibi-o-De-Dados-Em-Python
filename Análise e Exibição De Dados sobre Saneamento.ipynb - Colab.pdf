@@ -15,7 +15,7 @@ Python (pandas, matplotlib, seaborn, plotly, geopandas)
 
 Jupyter Notebook
 
-Bases de dados públicas (SNIS, IBGE, entre outras)
+Base de Dados do Snis
 
 📁 Estrutura do repositório:
 data/: Conjunto de dados utilizados (ou instruções para obtê-los)
